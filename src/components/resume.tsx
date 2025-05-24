@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -16,29 +16,40 @@ const resumeData = {
   languages: ["Amharic (Fluent)", "English (Fluent)"],
 };
 
+declare global {
+  interface HTMLDivElement {
+    __handleMouseEnter?: () => void;
+  }
+}
+
 export default function Resume() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  useEffect(() => {
-    // Animate section title
-    gsap.fromTo(
-      sectionRef.current?.querySelector("h2"),
-      { opacity: 0, y: 50 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        ease: "power4.out",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-      }
-    );
+  useLayoutEffect(() => {
+    const triggers: ScrollTrigger[] = [];
 
-    // Animate resume cards
+    // Animate section title
+    const sectionTitle = sectionRef.current?.querySelector("h2");
+    if (sectionTitle && sectionRef.current) {
+      gsap.fromTo(
+        sectionTitle,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: "power4.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+    }
+
+    // Animate and add hover logic to each card
     cardRefs.current.forEach((card, index) => {
       if (card) {
         const tl = gsap.timeline({ paused: true });
@@ -46,25 +57,22 @@ export default function Resume() {
           .to(card.querySelector("h3"), { color: "#00ff6a", duration: 0.4 }, "-=0.3")
           .to(card.querySelector(".glow"), { opacity: 1, duration: 0.4 }, "-=0.3");
 
-        gsap.fromTo(
-          card,
-          { opacity: 0, y: 50 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            delay: index * 0.3,
-            ease: "power4.out",
-            scrollTrigger: {
-              trigger: card,
-              start: "top 80%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
+        const trigger = ScrollTrigger.create({
+          trigger: card,
+          start: "top 80%",
+          onEnter: () => {
+            gsap.fromTo(
+              card,
+              { opacity: 0, y: 50 },
+              { opacity: 1, y: 0, duration: 1, ease: "power4.out" }
+            );
+          },
+          toggleActions: "play none none reverse",
+        });
 
-        // Hover animations
-        card.addEventListener("mouseenter", () => {
+        triggers.push(trigger);
+
+        const handleMouseEnter = () => {
           cardRefs.current.forEach((p, i) => {
             if (p && i !== index) {
               gsap.to(p.querySelector("h3"), { color: "#666666", duration: 0.4 });
@@ -76,28 +84,27 @@ export default function Resume() {
               tl.play();
             }
           });
-        });
+        };
+
+        card.__handleMouseEnter = handleMouseEnter;
+        card.addEventListener("mouseenter", handleMouseEnter);
       }
     });
 
     // Cleanup
     return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      triggers.forEach(trigger => trigger.kill());
       cardRefs.current.forEach((card) => {
-        if (card) {
-          const listeners = card.getEventListeners?.("mouseenter") || [];
-          listeners.forEach((listener: any) => card.removeEventListener("mouseenter", listener));
+        if (card?.__handleMouseEnter) {
+          card.removeEventListener("mouseenter", card.__handleMouseEnter);
         }
       });
     };
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      className="min-h-screen w-full  text-white relative overflow-hidden"
-     id="resume">
-      <div className="absolute inset-0 ">
+    <section ref={sectionRef} className="min-h-screen w-full text-white relative overflow-hidden" id="resume">
+      <div className="absolute inset-0">
         {Array.from({ length: 70 }, (_, i) => (
           <div
             key={i}
