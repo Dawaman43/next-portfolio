@@ -155,7 +155,7 @@ export default function Home() {
             <span className="text-[#b8b8b8]">ELOPER</span>
           </h1>
           <p className="mt-4 sm:mt-6 text-lg sm:text-xl md:text-2xl max-w-2xl mx-auto text-[#b8b8b8]">
-            Hi! I'm{" "}
+            Hi! I am{" "}
             <span className="text-[#ffffff] font-semibold bg-gradient-to-r from-[#00ff6a]/30 to-[#00cc55]/30 px-2 py-1 rounded">
               Dawit
             </span>
