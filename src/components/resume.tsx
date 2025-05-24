@@ -28,6 +28,7 @@ export default function Resume() {
 
   useLayoutEffect(() => {
     const triggers: ScrollTrigger[] = [];
+    const cards = cardRefs.current.slice();
 
     // Animate section title
     const sectionTitle = sectionRef.current?.querySelector("h2");
@@ -48,9 +49,8 @@ export default function Resume() {
         }
       );
     }
-
     // Animate and add hover logic to each card
-    cardRefs.current.forEach((card, index) => {
+    cards.forEach((card, index) => {
       if (card) {
         const tl = gsap.timeline({ paused: true });
         tl.to(card.querySelector(".fill-line"), { width: "100%", duration: 0.6, ease: "power3.out" })
@@ -73,7 +73,7 @@ export default function Resume() {
         triggers.push(trigger);
 
         const handleMouseEnter = () => {
-          cardRefs.current.forEach((p, i) => {
+          cards.forEach((p, i) => {
             if (p && i !== index) {
               gsap.to(p.querySelector("h3"), { color: "#666666", duration: 0.4 });
               gsap.to(p.querySelector(".fill-line"), { width: "0%", duration: 0.4 });
@@ -94,7 +94,7 @@ export default function Resume() {
     // Cleanup
     return () => {
       triggers.forEach(trigger => trigger.kill());
-      cardRefs.current.forEach((card) => {
+      cards.forEach((card) => {
         if (card?.__handleMouseEnter) {
           card.removeEventListener("mouseenter", card.__handleMouseEnter);
         }
@@ -133,7 +133,7 @@ export default function Resume() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Personal Information */}
           <div
-            ref={(el) => (cardRefs.current[0] = el)}
+            ref={el => { cardRefs.current[0] = el; }}
             className="relative bg-[#1a1a1a]/50 backdrop-blur-sm border border-green-400/20 rounded-lg p-6 hover:scale-105 transition-transform duration-300"
           >
             <div className="flex items-center gap-4">
@@ -155,7 +155,7 @@ export default function Resume() {
 
           {/* Education */}
           <div
-            ref={(el) => (cardRefs.current[1] = el)}
+            ref={el => { cardRefs.current[1] = el; }}
             className="relative bg-[#1a1a1a]/50 backdrop-blur-sm border border-green-400/20 rounded-lg p-6 hover:scale-105 transition-transform duration-300"
           >
             <div className="flex items-center gap-4">
@@ -186,7 +186,7 @@ export default function Resume() {
 
           {/* Languages */}
           <div
-            ref={(el) => (cardRefs.current[2] = el)}
+            ref={el => { cardRefs.current[2] = el; }}
             className="relative bg-[#1a1a1a]/50 backdrop-blur-sm border border-green-400/20 rounded-lg p-6 hover:scale-105 transition-transform duration-300"
           >
             <div className="flex items-center gap-4">
