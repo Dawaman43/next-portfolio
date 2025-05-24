@@ -158,7 +158,10 @@ export default function Projects() {
             {projects.map((project, index) => (
               <div key={project.id}>
                 <div
-                  ref={(el) => (projectRefs.current[index] = el)}
+                 ref={(el) => {
+                  projectRefs.current[index] = el;
+                }}
+
                   className="group relative bg-[#1a1a1a]/50 backdrop-blur-sm border border-green-400/20 rounded-lg p-4 sm:p-6 hover:scale-105 transition-transform duration-300"
                 >
                   <div className="flex items-center gap-3 sm:gap-4">
