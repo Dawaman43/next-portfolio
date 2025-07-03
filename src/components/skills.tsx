@@ -32,12 +32,16 @@ const skillCategories: { title: string; skills: Skill[] }[] = [
     skills: [
       { src: "/assets/icons/django.svg", label: "Django" },
       { src: "/assets/icons/php.svg", label: "PHP" },
+      { src: "/assets/icons/expressjs.svg", label: "Express" },
+      { src: "/assets/icons/nodejs.svg", label: "Node js" },
     ],
   },
   {
     title: "Database",
     skills: [
       { src: "/assets/icons/mysql.svg", label: "MySQL" },
+      { src: "/assets/icons/mongodb.svg", label: "MongoDB" },
+      { src: "/assets/icons/postgresql.svg", label: "POstgres" },
     ],
   },
   {
